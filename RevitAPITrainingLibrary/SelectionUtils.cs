@@ -21,6 +21,26 @@ namespace RevitAPITrainingLibrary
             var oElement = doc.GetElement(selectedObject);
             return oElement;
         }
+
+        public static T GetObject<T>(ExternalCommandData commandData, string promptMessage)
+        {
+            UIApplication uiapp = commandData.Application;
+            UIDocument uidoc = uiapp.ActiveUIDocument;
+            Document doc = uidoc.Document;
+            Reference selectedObj = null;
+            T elem;
+            try
+            {
+                selectedObj = uidoc.Selection.PickObject(ObjectType.Element, promptMessage);
+            }
+            catch (Exception)
+            {
+                return default(T);
+            }
+            elem = (T)(object)doc.GetElement(selectedObj.ElementId);
+            return elem;
+        }
+
         public static List<Element> PickObjects(ExternalCommandData commandData, string message = "Выберите элементы")
         {
             UIApplication uiapp = commandData.Application;
@@ -32,9 +52,29 @@ namespace RevitAPITrainingLibrary
             return elementList;
         }
 
-        public List<Element> PickObjects(ExternalCommandData commandData)
+        public static List<XYZ> GetPoints(ExternalCommandData commandData,
+                            string promptMessage, ObjectSnapTypes objectSnapTypes)
         {
-            throw new NotImplementedException();
+            UIApplication uiapp = commandData.Application;
+            UIDocument uidoc = uiapp.ActiveUIDocument;
+
+            List<XYZ> points = new List<XYZ>();
+
+            while (true)
+            {
+                XYZ pickedPoint = null;
+                try
+                {
+                    pickedPoint = uidoc.Selection.PickPoint(objectSnapTypes, promptMessage);
+                }
+                catch (Autodesk.Revit.Exceptions.OperationCanceledException ex)
+                {
+                    break;
+                }
+                points.Add(pickedPoint);
+            }
+
+            return points;
         }
     }
 }
