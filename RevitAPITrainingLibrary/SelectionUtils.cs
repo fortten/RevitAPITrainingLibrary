@@ -76,5 +76,17 @@ namespace RevitAPITrainingLibrary
 
             return points;
         }
+
+        public static XYZ GetPoint(ExternalCommandData commandData,
+                            string promptMessage, ObjectSnapTypes objectSnapTypes)
+        {
+            UIApplication uiapp = commandData.Application;
+            UIDocument uidoc = uiapp.ActiveUIDocument;
+            Document doc = uidoc.Document;
+
+            var pickedPoint = uidoc.Selection.PickPoint(ObjectSnapTypes.Endpoints, "Выберите точку");
+
+            return pickedPoint;
+        }
     }
 }
